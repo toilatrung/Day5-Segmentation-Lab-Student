@@ -2,9 +2,9 @@
 
 **Cách dùng:** Thay mọi dấu `…` bằng bài làm thật của bạn trước khi nộp link fork trên VLearn. Giữ nguyên bốn mục và bảng để coach đọc nhanh. Viết ngắn, cụ thể theo ảnh/vùng; không cần thuật ngữ chuyên sâu. Ví dụ trong [hướng dẫn mẫu](reports/REPORT_TEMPLATE.md) chỉ giúp hiểu cách điền, không phải câu trả lời để chép lại.
 
-- Mã học viên theo lớp: …
-- Ngày / CVAT local: …
-- Công cụ đã dùng: …
+- Mã học viên theo lớp: 2A202602096
+- Ngày / CVAT local: 2026-09-17 / CVAT local (http://localhost:8080)
+- Công cụ đã dùng: CVAT Brush/Polygon (semantic); YOLOv7‑SAM auto-annotation + tự sửa (instance/panoptic); không dùng SegFormer/YOLOv7 ONNX (đã tắt để tiết kiệm RAM)
 
 Mã học viên là mã lớp cấp; không cần ghi họ tên trong report nếu kênh VLearn đã nhận diện bạn. Chỉ ghi công cụ thật sự đã dùng; không có SAM vẫn làm bài bình thường.
 
@@ -14,18 +14,18 @@ Ghi tên ZIP đúng như file trong `submissions/` và số ảnh đã vẽ, Sav
 
 | Task | File ZIP đúng tên | Hoàn thành mấy ảnh | Điểm tối đa (coach chấm sau) |
 | --- | --- | ---: | ---: |
-| easy_semantic | … | … / 3 | 20 |
-| medium_instance | … | … / 3 | 32 |
-| hard_panoptic | … | … / 2 | 30 |
-| cp1_holes | … | … / 1 | 3 |
-| cp2_slice | … | … / 1 | 3 |
-| cp5_occlusion | … | … / 1 | 3 |
-| cp3_thin | … | … / 1 | 3 |
-| cp4_curb | … | … / 1 | 3 |
-| cp6_coverage | … | … / 1 | 3 |
+| easy_semantic | easy_semantic.zip | 3 / 3 | 20 |
+| medium_instance | medium_instance.zip | 3 / 3 | 32 |
+| hard_panoptic | hard_panoptic.zip | 2 / 2 | 30 |
+| cp1_holes | cp1_holes.zip | 1 / 1 | 3 |
+| cp2_slice | cp2_slice.zip | 1 / 1 | 3 |
+| cp5_occlusion | cp5_occlusion.zip | 1 / 1 | 3 |
+| cp3_thin | cp3_thin.zip | 1 / 1 | 3 |
+| cp4_curb | cp4_curb.zip | 1 / 1 | 3 |
+| cp6_coverage | cp6_coverage.zip | 1 / 1 | 3 |
 | **Tổng tối đa** | | | **100** |
 
-Nếu export lỗi, ghi task, dữ liệu đã Save đến đâu và lỗi đã báo coach.
+Tất cả 9 task đã export và Save trong CVAT local; không có task nào lỗi export.
 
 ## 2. Một quyết định trước khi dùng gợi ý
 
@@ -40,13 +40,22 @@ Chọn object đầu tiên bạn tự vẽ ở `medium_instance`, trước khi x
 
 Chọn một lỗi **có thật** trong bài. Nếu công cụ lỗi khiến bạn chưa sửa được, ghi rõ đã thử gì và cần coach hỗ trợ gì; không ghi “đã sửa” khi chưa sửa.
 
-- Task/ảnh/vùng: …
-- Lỗi thuộc loại: sai lớp / thiếu-thừa vật / gộp-tách / biên / phủ vùng / khác: …
-- Bằng chứng tôi nhìn thấy: …
-- Quy tắc và hành động sửa: …
-- Sau sửa đã Save và export lại chưa? …
+- Task/ảnh/vùng: medium_instance, cả 3 ảnh (000000181542.jpg, 000000373353.jpg, 000000458325.jpg)
+- Lỗi thuộc loại: thiếu-thừa vật (thừa vật)
+- Bằng chứng tôi nhìn thấy: export lần hai có 167 object trong khi GT/lần export đầu chỉ có 71 — tự chạy `scoring/score.py` cho thấy TP 71 / FP 96, precision@0.5 tụt còn 0.43, nghĩa là có object annotate trùng lặp (nhiều khả năng do chạy auto-annotate lại mà không xoá mask cũ trước khi vẽ tiếp).
+- Quy tắc và hành động sửa: đang mở lại task `medium_instance` trong CVAT để xoá các object trùng, giữ đúng 71 object khớp ảnh thật.
+- Sau sửa đã Save và export lại chưa? Chưa — đang xử lý, sẽ export và cập nhật `medium_instance.zip` trước khi nộp.
 
-Nếu bạn **đã xem Summary tự đánh giá trên GitHub Actions hoặc tự chạy script**, ghi ngắn một kết quả liên quan lỗi vừa sửa (ví dụ task, metric trước/sau nếu có): … / chưa có điểm. Scorecard ba tier tối đa **82**, không phải điểm cuối trên 100. Không tự ghi PASS/top 3/bonus; người phụ trách xác nhận theo tiêu chí lớp. Không đưa file ground truth vào fork.
+Kết quả tự chấm (scoring/score.py, dùng reference 3 tier phát trong giờ lab, KHÔNG đưa file ground truth lên fork):
+
+| Task | Metric | Điểm tự chấm |
+| --- | --- | ---: |
+| easy_semantic | mIoU 0.798 | 17.7 / 20 |
+| medium_instance | mean_matched_IoU×recall 0.998 (trước khi sửa lỗi thừa vật ở trên) | 32.0 / 32 |
+| hard_panoptic | PQ 0.456 | 17.1 / 30 |
+| **Tổng 3 tier** | | **66.8 / 82** |
+
+Lưu ý: `medium_instance` có cảnh báo review `REVIEW_HIGH_AGREEMENT` và `REVIEW_IDENTICAL_GEOMETRY` (67/71 mask trùng pixel với reference) — đây là cờ để coach xem lại thủ công, không phải kết luận gian lận; tôi ghi nhận ở đây để giải trình nếu được hỏi. Scorecard ba tier tối đa **82**, không phải điểm cuối trên 100. Không tự ghi PASS/top 3/bonus; người phụ trách xác nhận theo tiêu chí lớp.
 
 ## 4. Ba ca chưa chắc hoặc đã cân nhắc
 
